@@ -31,6 +31,13 @@ mkdir -p /usr/local/bin /etc
 install -s -m 755 snoopy/snoopy.conf /etc/snoopy.conf
 install -s -m 0700 snoopy/snoopy /usr/local/bin/snoopy
 install -s -m 0700 snoopy/snoopy.cron /etc/cron.d/snoopy.cron
+touch /etc/plbakeloadwatchinstalled
+
+%post
+[[ /root/loadwatch/checklog -f ]] && mv /root/loadwatch/checklog /var/log/snoopy.log
+[[ /root/loadwatch -d ]] && rsync /root/loadwatch /var/log/snoopy
+rm -rf /root/loadwatch
+rm -f /root/bin/loadwatch
 
 
 %clean
