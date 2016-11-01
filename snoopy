@@ -1,0 +1,52 @@
+#!/bin/bash
+DIR=/var/log/snoopy
+CHECKLOG=${DIR}.log
+FILE=${DIR}/snoopy.`date +%F.%H.%M`
+#Load Threshold for doing a dump.
+LOADTHRESH=auto
+SQLTHRESH=25
+MEMTHRESH=80
+SWAPTHRESH=20
+APACHETHRESH=120
+
+if [[ ${LOADTHRESH} -eq "auto" ]]
+then
+	LOADTHRESH=$(expr $(/bin/grep -c processor /proc/cpuinfo) / 2  + 7)
+fi
+
+LOAD=`cat /proc/loadavg | awk '{print $1}' | awk -F '.' '{print $1}'`
+
+read MEM SWAP <<<$(awk '{
+	gsub(":$","",$1); m[$1] = $2
+	} END {
+		printf "%d ", ((m["MemTotal"]-m["MemFree"]-m["Buffers"]-m["Cached"])/m["MemTotal"])*100;
+		printf "%d\n",((m["SwapTotal"]-m["SwapCached"]-m["SwapFree"])/m["SwapTotal"])*100;
+	}' /proc/meminfo)
+
+CURSQL=`/usr/bin/mysqladmin stat|awk '{print $4}'`
+
+HISTSQL=`/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";'|awk '{print $2}'`
+
+APACHECONN=$(/usr/sbin/httpd status |awk '/requests\ currently\ being\ processed,/ {print $1}')
+
+# checks to see if $APACHECONN is numeric
+if [[ ${APACHECONN} != *[0-9]* ]]
+then
+	APACHEFALLBACK=yes
+	APACHECONN=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}')
+fi
+
+echo `date +%F.%X` - Load: ${LOAD} Mem: ${MEM} Swap: ${SWAP} MySQL conn: ${CURSQL} Hist MySQL: ${HISTSQL} httpd conn: ${APACHECONN} >> ${CHECKLOG}
+
+if [ $LOAD -gt $LOADTHRESH ] || [ $MEM -gt $MEMTHRESH ] || [ $SWAP -gt $SWAPTHRESH ] || [ $CURSQL -gt $SQLTHRESH ] || [ $APACHECONN -gt $APACHETHRESH ]
+then
+	echo tripped, dumping info to ${FILE} >> ${CHECKLOG}
+	echo `date +%F.%H.%M` > ${FILE}
+	free -m >> ${FILE}
+	uptime >> ${FILE}
+	mysqladmin processlist stat >> ${FILE}
+	/bin/netstat -nut|awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}'|sort|uniq -c|sort -n|tail -n50 >> ${FILE}
+	top -bcn1 >> ${FILE}
+	ps auxf >> ${FILE}
+	[ ! -z "$APACHEFALLBACK" ] && echo "Apache Fallback Triggered" || /sbin/service httpd fullstatus >> ${FILE} 2> /dev/null
+fi
