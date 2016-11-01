@@ -6,7 +6,7 @@ Copyright: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
-Requires: bash
+Requires: bash cron
 #Source: http://metalab.unc.edu/pub/Linux/utils/disk-management/eject-2.0.2.tar.gz
 #Patch: eject-2.0.2-buildroot.patch
 #BuildRoot: /var/tmp/%{name}-buildroot
@@ -27,8 +27,10 @@ git clone https://github.com/JackKnifed/snoopy.git snoopy
 
 %install
 install -d /var/log/snoopy
-install -s -m 0700 snoopy/snoopy /usr/local/bin
-install -s -m 0700 snoopy/snoopy.cron /etc/cron.d
+mkdir -p /usr/local/bin /etc
+install -s -m 755 snoopy/snoopy.conf /etc/snoopy.conf
+install -s -m 0700 snoopy/snoopy /usr/local/bin/snoopy
+install -s -m 0700 snoopy/snoopy.cron /etc/cron.d/snoopy.cron
 
 
 %clean
@@ -36,12 +38,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README TODO COPYING ChangeLog
+%doc readme.md
 
+%dir /var/log/snoopy
+%config /etc/snoopy.conf
 /usr/local/bin/snoopy
 /etc/cron.d/snoopy.cron
 
 %changelog
-* Wed Feb 24 1999 Preston Brown <pbrown@redhat.com> 
-- Injected new description and group.
-
+* Tue Nov 01 2016 Jack Hayhurst <jhayhurst@liquidweb.com> 
+- Wrote inital build script and changelog.

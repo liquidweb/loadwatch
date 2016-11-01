@@ -1,13 +1,10 @@
 #!/bin/bash
+source /etc/snoopy.conf
 DIR=/var/log/snoopy
 CHECKLOG=${DIR}.log
 FILE=${DIR}/snoopy.`date +%F.%H.%M`
-#Load Threshold for doing a dump.
-LOADTHRESH=auto
-SQLTHRESH=25
-MEMTHRESH=80
-SWAPTHRESH=20
-APACHETHRESH=120
+
+# see /etc/snoopy.conf for configuration
 
 if [[ ${LOADTHRESH} -eq "auto" ]]
 then
