@@ -6,7 +6,7 @@ License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
-Requires: bash cron
+Requires: bash cronie
 #Source: http://metalab.unc.edu/pub/Linux/utils/disk-management/eject-2.0.2.tar.gz
 #Patch: eject-2.0.2-buildroot.patch
 #BuildRoot: /var/tmp/%{name}-buildroot
@@ -19,8 +19,8 @@ When errant conditions are detected, certain information is dumped to a file
 for later inspection.
 
 %prep
-rm -rf snoopy
-git clone https://github.com/JackKnifed/snoopy.git snoopy
+rm -rf ${RPM_BUILD_DIR}/snoopy
+git clone https://github.com/JackKnifed/snoopy.git ${RPM_BUILD_DIR}/snoopy
 [[ $? -ne 0 ]] && exit $?
 
 %build
@@ -28,9 +28,9 @@ git clone https://github.com/JackKnifed/snoopy.git snoopy
 %install
 install -d /var/log/snoopy
 mkdir -p /usr/local/bin /etc
-install -s -m 755 snoopy/snoopy.conf /etc/snoopy.conf
-install -s -m 0700 snoopy/snoopy /usr/local/bin/snoopy
-install -s -m 0700 snoopy/snoopy.cron /etc/cron.d/snoopy.cron
+install -m 755 ${RPM_BUILD_DIR}/snoopy/snoopy.conf /etc/snoopy.conf
+install -m 0700 ${RPM_BUILD_DIR}/snoopy/snoopy /usr/local/bin/snoopy
+install -m 0700 ${RPM_BUILD_DIR}/snoopy/snoopy.cron /etc/cron.d/snoopy.cron
 touch /etc/plbakeloadwatchinstalled
 
 %post
@@ -45,7 +45,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc readme.md
 
 %dir /var/log/snoopy
 %config /etc/snoopy.conf
