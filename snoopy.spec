@@ -2,7 +2,7 @@ Summary: A script to monitor a system for abnormal conditions, and log data
 Name: snoopy
 Version: 1.0.0
 Release: 0
-Copyright: MIT
+License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
