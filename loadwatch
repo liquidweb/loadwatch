@@ -1,10 +1,10 @@
 #!/bin/bash
-source /etc/snoopy.conf
-DIR=/var/log/snoopy
+source /etc/loadwatch.conf
+DIR=/var/log/loadwatch
 CHECKLOG=${DIR}.log
-FILE=${DIR}/snoopy.`date +%F.%H.%M`
+FILE=${DIR}/loadwatch.`date +%F.%H.%M`
 
-# see /etc/snoopy.conf for configuration
+# see /etc/loadwatch.conf for configuration
 
 if [[ ${LOADTHRESH} -eq "auto" ]]
 then
