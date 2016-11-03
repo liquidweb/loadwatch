@@ -6,10 +6,8 @@ License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
-Requires: bash cronie
-#Source: http://metalab.unc.edu/pub/Linux/utils/disk-management/eject-2.0.2.tar.gz
-#Patch: eject-2.0.2-buildroot.patch
-#BuildRoot: /var/tmp/%{name}-buildroot
+Requires: bash, cronie
+#Source: https://github.com/JackKnifed/snoopy/archive/master.tar.gz
 
 %description
 The snoopy script runs on an interval, and monitors the system for errant
@@ -20,18 +18,16 @@ for later inspection.
 
 %prep
 rm -rf ${RPM_BUILD_DIR}/snoopy
-git clone https://github.com/JackKnifed/snoopy.git ${RPM_BUILD_DIR}/snoopy
-[[ $? -ne 0 ]] && exit $?
+curl -L https://github.com/jackknifed/snoopy/archive/master.tar.gz | tar xz
 
 %build
 
 %install
-install -d /var/log/snoopy
-mkdir -p /usr/local/bin /etc
-install -m 755 ${RPM_BUILD_DIR}/snoopy/snoopy.conf /etc/snoopy.conf
-install -m 0700 ${RPM_BUILD_DIR}/snoopy/snoopy /usr/local/bin/snoopy
-install -m 0700 ${RPM_BUILD_DIR}/snoopy/snoopy.cron /etc/cron.d/snoopy.cron
-touch /etc/plbakeloadwatchinstalled
+mkdir -p %{buildroot}/usr/local/bin %{buildroot}/etc/cron.d %{buildroot}/var/log/snoopy
+install -m 0700 ${RPM_BUILD_DIR}/snoopy-master/snoopy %{buildroot}/usr/local/bin/snoopy
+install -m 755 ${RPM_BUILD_DIR}/snoopy-master/snoopy.conf %{buildroot}/etc/snoopy.conf
+install -m 0700 ${RPM_BUILD_DIR}/snoopy-master/snoopy.cron %{buildroot}/etc/cron.d/snoopy.cron
+touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
 [[ /root/loadwatch/checklog -f ]] && mv /root/loadwatch/checklog /var/log/snoopy.log
@@ -41,7 +37,7 @@ rm -f /root/bin/loadwatch
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root)
@@ -50,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 %config /etc/snoopy.conf
 /usr/local/bin/snoopy
 /etc/cron.d/snoopy.cron
+/etc/plbakeloadwatchinstalled
 
 %changelog
 * Tue Nov 01 2016 Jack Hayhurst <jhayhurst@liquidweb.com> 
