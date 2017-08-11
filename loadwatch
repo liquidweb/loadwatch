@@ -7,9 +7,10 @@ export MEMTHRESH=80
 export SWAPTHRESH=20
 export APACHETHRESH=120
 
+date=$(date +%F.%X)
 dir=/var/log/loadwatch
 checklog=${dir}.log
-file=${dir}/loadwatch.`date +%F.%H.%M`
+file=${dir}/loadwatch.${date}
 
 source /etc/default/loadwatch
 
@@ -23,17 +24,17 @@ fi
 local load=`cat /proc/loadavg | awk '{print $1}' | awk -F '.' '{print $1}'`
 
 local mem
-local SWAP
-read mem SWAP <<<$(awk '{
+local swap
+read mem swap <<<$(awk '{
 	gsub(":$","",$1); m[$1] = $2
 	} END {
 		printf "%d ", ((m["MemTotal"]-m["MemFree"]-m["Buffers"]-m["Cached"])/m["MemTotal"])*100;
 		printf "%d\n",((m["SwapTotal"]-m["SwapCached"]-m["SwapFree"])/m["SwapTotal"])*100;
 	}' /proc/meminfo)
 
-local cursql=`/usr/bin/mysqladmin stat|awk '{print $4}'`
+local cursql=$(/usr/bin/mysqladmin stat|awk '{print $4}')
 
-local histsql=`/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";'|awk '{print $2}'`
+local histsql=$(/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";'|awk '{print $2}')
 
 local apacheconn
 if [[ -f /usr/local/cpanel/version ]] ; then
@@ -42,23 +43,40 @@ else
 	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}')
 fi
 
-printf "load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]"
-echo `date +%F.%X` - Load: ${load} Mem: ${mem} Swap: ${SWAP} MySQL conn: ${cursql} Hist MySQL: ${histsql} httpd conn: ${apacheconn} >> ${checklog}
+printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+	${date} ${load} ${mem} ${swap} \
+	${cursql} ${histsql} ${apacheconn} >> ${checklog}
 
 if [ ${load} -gt ${LOADTHRESH} ] || \
 	[ ${mem} -gt ${MEMTHRESH} ] || \
-	[ ${SWAP} -gt ${SWAPTHRESH} ] || \
+	[ ${swap} -gt ${SWAPTHRESH} ] || \
 	[ ${cursql} -gt $SQLTHRESH ] || \
 	[ ${apacheconn} -gt ${APACHETHRESH} ] ; then
 
-	echo tripped, dumping info to ${file} >> ${checklog}
-	echo `date +%F.%H.%M` > ${file}
+	printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+		${date} ${load} ${mem} ${swap} \
+		${cursql} ${histsql} ${apacheconn} >> ${checklog}
+
+	printf "## server overview\n"
+	printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+		${date} ${load} ${mem} ${swap} \
+		${cursql} ${histsql} ${apacheconn} >> ${file}
 	free -m >> ${file}
 	uptime >> ${file}
-	mysqladmin processlist stat >> ${file}
-	/bin/netstat -nut|awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}'|sort|uniq -c|sort -n|tail -n50 >> ${file}
+
+	printf "## system overview\n"
 	top -bcn1 >> ${file}
 	ps auxf >> ${file}
-	which httpd &>/dev/null && /usr/sbin/httpd fullstatus >> ${FILE} 2> /dev/null
-	which apachectl &>/dev/null && /usr/sbin/apachectl fullstatus >> ${FILE} 2> /dev/null
+
+	printf "## mysql stats\n"
+	mysqladmin processlist stat >> ${file}
+
+	printf "## httpd stats\n"
+	/bin/netstat -nut|awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}'|sort|uniq -c|sort -n|tail -n50 >> ${file}
+	if [[ -f /usr/local/cpanel/version ]] ; then
+		/usr/bin/lynx -dump -width 400 localhost/whm-server-status >> ${file} 2>/dev/null
+	else
+		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
+	fi
+
 fi
