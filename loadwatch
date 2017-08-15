@@ -6,6 +6,7 @@ export SQLTHRESH=25
 export MEMTHRESH=80
 export SWAPTHRESH=20
 export APACHETHRESH=120
+export APACHEPORT=80
 
 date=$(date +%F.%X)
 dir=/var/log/loadwatch
@@ -38,7 +39,7 @@ local histsql=$(/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connectio
 
 local apacheconn
 if [[ -f /usr/local/cpanel/version ]] ; then
-	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost/whm-server-status |awk '/requests\ currently\ being\ processed,/ {print $1}')
+	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status |awk '/requests\ currently\ being\ processed,/ {print $1}')
 else
 	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}')
 fi
@@ -74,7 +75,7 @@ if [ ${load} -gt ${LOADTHRESH} ] || \
 	printf "## httpd stats\n"
 	/bin/netstat -nut|awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}'|sort|uniq -c|sort -n|tail -n50 >> ${file}
 	if [[ -f /usr/local/cpanel/version ]] ; then
-		/usr/bin/lynx -dump -width 400 localhost/whm-server-status >> ${file} 2>/dev/null
+		/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status >> ${file} 2>/dev/null
 	else
 		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
 	fi
