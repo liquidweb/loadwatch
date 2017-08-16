@@ -26,7 +26,7 @@ curl -L https://github.com/jackknifed/loadwatch/archive/master.tar.gz | tar xz
 
 %install
 mkdir -p \
-  %{buildroot}/usr/local/bin \
+  %{buildroot}/usr/local/lp/bin \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
   %{buildroot}/var/log/loadwatch
