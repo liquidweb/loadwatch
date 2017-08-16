@@ -3,13 +3,13 @@
 
 * Output is logged to `/var/log/loadwatch`.
 * The checklog is at `/var/log/loadwatch.log`.
-* The configuration is at `/etc/loadwatch.conf`.
+* The configuration is at `/etc/default/loadwatch`.
 
 There are three requirements for this script:
 
 * It cannot cause load
 * It has to run quickly
-* It must provide useful information
+* It must provide information from useful times
 
 This script currently does not support email notifications, it is purely passive.
 The intention is that this should gather information to be reviewed if other issues are noticed.
