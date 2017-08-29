@@ -1,7 +1,7 @@
 
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.0.1
+Version: 1.0.2
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
