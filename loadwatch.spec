@@ -2,13 +2,13 @@
 %global tardir loadwatch-master
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 0.1.0
+Version: 1.0.1
 Release: 0
 License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
-Requires: bash, cronie, lynx
+Requires: bash, cronie, lynx, sed
 #Source: https://github.com/JackKnifed/loadwatch/archive/master.tar.gz
 
 %description
@@ -36,10 +36,11 @@ install -m 0700 ${RPM_BUILD_DIR}/loadwatch-master/loadwatch.cron %{buildroot}/et
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
-[[ /root/loadwatch/checklog -f ]] && mv /root/loadwatch/checklog /var/log/loadwatch.log
-[[ /root/loadwatch -d ]] && rsync /root/loadwatch /var/log/loadwatch
+[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch.log
+[[ -d /root/loadwatch ]] && rsync -aHl /root/loadwatch /var/log/loadwatch >/dev/null
 rm -rf /root/loadwatch
-rm -f /root/bin/loadwatch
+rm -f /root/bin/loadwatch.sh /root/bin/loadwatch
+sed -i -e '/\/root\/bin\/loadwatch/d' -e '/\/root\/loadwatch/d' /var/spool/cron/root
 
 
 %clean
@@ -55,5 +56,8 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Mon Aug 28 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.1
+- reworked specfile, now installs
+
 * Tue Nov 01 2016 Jack Hayhurst <jhayhurst@liquidweb.com> 
 - Wrote inital build script and changelog.
