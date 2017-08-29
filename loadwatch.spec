@@ -1,15 +1,15 @@
 
-%global tardir loadwatch-master
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
 Version: 1.0.1
 Release: 0
+URL: https://github.com/jakdept/loadwatch
 License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
 Requires: bash, cronie, lynx, sed
-#Source: https://github.com/JackKnifed/loadwatch/archive/master.tar.gz
+Source0:  https://github.com/jakdept/%{name}/archive/GIT-TAG/%{name}-%{version}.tar.gz
 
 %description
 The loadwatch script runs on an interval, and monitors the system for errant
