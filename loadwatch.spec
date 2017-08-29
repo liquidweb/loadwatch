@@ -20,7 +20,7 @@ for later inspection.
 
 %prep
 rm -rf ${RPM_BUILD_DIR}/loadwatch
-curl -L https://github.com/jackknifed/loadwatch/archive/master.tar.gz | tar xz
+curl -L https://github.com/jackknifed/loadwatch/archive/v%{version}.tar.gz | tar xz
 
 %build
 
@@ -30,9 +30,9 @@ mkdir -p \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
   %{buildroot}/var/log/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-master/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
-install -m 755 ${RPM_BUILD_DIR}/loadwatch-master/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-master/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
+install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
+install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
