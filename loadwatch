@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#default settings
+#default settings - can be adjusted in /etc/default/loadwatch.cron
 export LOADTHRESH=auto
 export SQLTHRESH=25
 export MEMTHRESH=80
-export SWAPTHRESH=20
+export SWAPTHRESH=30
 export APACHETHRESH=120
 export APACHEPORT=80
 
@@ -15,7 +15,7 @@ file=${dir}/loadwatch.${date}
 
 source /etc/default/loadwatch
 
-# see /etc/loadwatch.conf for configuration
+# see /etc/default/loadwatch for configuration
 
 if [[ ${LOADTHRESH} -eq "auto" ]]
 then
