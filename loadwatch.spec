@@ -1,7 +1,7 @@
 
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.0.2
+Version: 1.0.3
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
@@ -32,7 +32,7 @@ mkdir -p \
   %{buildroot}/var/log/loadwatch
 install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
 install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+install -m 0600 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
@@ -56,6 +56,10 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Wed Sep 06 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.3
+- adjusted cron so it works.
+- added other minor changes requested.
+
 * Mon Aug 28 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.1
 - reworked specfile, now installs
 

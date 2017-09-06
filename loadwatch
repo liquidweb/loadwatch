@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#default settings
+#default settings - can be adjusted in /etc/default/loadwatch.cron
 export LOADTHRESH=auto
 export SQLTHRESH=25
 export MEMTHRESH=80
-export SWAPTHRESH=20
+export SWAPTHRESH=30
 export APACHETHRESH=120
 export APACHEPORT=80
 
@@ -15,11 +15,11 @@ file=${dir}/loadwatch.${date}
 
 source /etc/default/loadwatch
 
-# see /etc/loadwatch.conf for configuration
+# see /etc/default/loadwatch for configuration
 
 if [[ ${LOADTHRESH} -eq "auto" ]]
 then
-	LOADTHRESH=$(expr $(/bin/grep -c processor /proc/cpuinfo) / 2  + 7)
+	LOADTHRESH=$(expr $(/bin/grep -c processor /proc/cpuinfo) / 2 + 7)
 fi
 
 local load=`cat /proc/loadavg | awk '{print $1}' | awk -F '.' '{print $1}'`
@@ -41,7 +41,7 @@ local apacheconn
 if [[ -f /usr/local/cpanel/version ]] ; then
 	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status |awk '/requests\ currently\ being\ processed,/ {print $1}')
 else
-	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}')
+	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}')
 fi
 
 printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
@@ -77,7 +77,7 @@ if [ ${load} -gt ${LOADTHRESH} ] || \
 	if [[ -f /usr/local/cpanel/version ]] ; then
 		/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status >> ${file} 2>/dev/null
 	else
-		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
+		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
 	fi
 
 fi
