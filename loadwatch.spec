@@ -32,7 +32,7 @@ mkdir -p \
   %{buildroot}/var/log/loadwatch
 install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
 install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+install -m 0600 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
