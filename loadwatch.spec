@@ -9,7 +9,6 @@ Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
 Requires: bash, cronie, lynx, sed
-Source0:  https://github.com/jakdept/%{name}/archive/GIT-TAG/%{name}-%{version}.tar.gz
 
 %description
 The loadwatch script runs on an interval, and monitors the system for errant
