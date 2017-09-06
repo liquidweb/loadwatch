@@ -41,7 +41,7 @@ local apacheconn
 if [[ -f /usr/local/cpanel/version ]] ; then
 	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status |awk '/requests\ currently\ being\ processed,/ {print $1}')
 else
-	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}')
+	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}')
 fi
 
 printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
@@ -77,7 +77,7 @@ if [ ${load} -gt ${LOADTHRESH} ] || \
 	if [[ -f /usr/local/cpanel/version ]] ; then
 		/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status >> ${file} 2>/dev/null
 	else
-		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80|89)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
+		netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}' >> ${file} 2>/dev/null
 	fi
 
 fi
