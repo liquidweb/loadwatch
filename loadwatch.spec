@@ -1,7 +1,7 @@
 
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.0.3
+Version: 1.0.4
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
@@ -55,7 +55,7 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
-* Wed Sep 06 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.3
+* Wed Sep 06 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.4
 - adjusted cron so it works.
 - added other minor changes requested.
 
