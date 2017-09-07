@@ -8,7 +8,7 @@ export SWAPTHRESH=30
 export APACHETHRESH=120
 export APACHEPORT=80
 
-date=$(date +%F.%X)
+date=$(date +%F.%T)
 dir=/var/log/loadwatch
 checklog=${dir}.log
 file=${dir}/loadwatch.${date}
@@ -42,7 +42,7 @@ else
 	apacheconn=$(netstat -nt|awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}')
 fi
 
-printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 	${date} ${load} ${mem} ${swap} \
 	${cursql} ${histsql} ${apacheconn} >> ${checklog}
 
@@ -52,12 +52,12 @@ if [ ${load} -gt ${LOADTHRESH} ] || \
 	[ ${cursql} -gt $SQLTHRESH ] || \
 	[ ${apacheconn} -gt ${APACHETHRESH} ] ; then
 
-	printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+	printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 		${date} ${load} ${mem} ${swap} \
 		${cursql} ${histsql} ${apacheconn} >> ${checklog}
 
 	printf "## server overview\n"
-	printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s/%s]\n" \
+	printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 		${date} ${load} ${mem} ${swap} \
 		${cursql} ${histsql} ${apacheconn} >> ${file}
 	free -m >> ${file}
