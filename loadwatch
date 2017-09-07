@@ -22,10 +22,8 @@ then
 	LOADTHRESH=$(expr $(/bin/grep -c processor /proc/cpuinfo) / 2 + 7)
 fi
 
-local load=`cat /proc/loadavg | awk '{print $1}' | awk -F '.' '{print $1}'`
+load=`cat /proc/loadavg | awk '{print $1}' | awk -F '.' '{print $1}'`
 
-local mem
-local swap
 read mem swap <<<$(awk '{
 	gsub(":$","",$1); m[$1] = $2
 	} END {
@@ -33,11 +31,11 @@ read mem swap <<<$(awk '{
 		printf "%d\n",((m["SwapTotal"]-m["SwapCached"]-m["SwapFree"])/m["SwapTotal"])*100;
 	}' /proc/meminfo)
 
-local cursql=$(/usr/bin/mysqladmin stat|awk '{print $4}')
+cursql=$(/usr/bin/mysqladmin stat|awk '{print $4}')
 
-local histsql=$(/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";'|awk '{print $2}')
+histsql=$(/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";'|awk '{print $2}')
 
-local apacheconn
+apacheconn=
 if [[ -f /usr/local/cpanel/version ]] ; then
 	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status |awk '/requests\ currently\ being\ processed,/ {print $1}')
 else
