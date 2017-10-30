@@ -8,10 +8,10 @@ export SWAPTHRESH=30
 export APACHETHRESH=120
 export APACHEPORT=80
 
-date=$(date +%F.%T)
+date=$(date +%Y-%m-%d.%H:%M)
 dir=/var/log/loadwatch
 checklog=${dir}/checklog.log
-file=${dir}/loadwatch.${date}
+file=${dir}/${date}.txt
 
 source /etc/default/loadwatch
 
