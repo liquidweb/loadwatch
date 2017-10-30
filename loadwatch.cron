@@ -1,4 +1,4 @@
 #!/bin/bash
 */3 * * * * root /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null
-0   1 * * * root /usr/bin/find /var/log/loadwatch -maxdepth 1 -type f -mtime +30 -delete
-0   2 * * 0 root log=/var/log/loadwatch/checklog.log /usr/bin/tail -n100000 ${log}.log > ${log}.new; mv -f ${log}.new ${log}.log
+0   1 * * * root /usr/bin/find /var/log/loadwatch -maxdepth 1 -type f -mtime +30 -name "*.txt" -delete
+0   2 * * 0 root log=/var/log/loadwatch/check.log /usr/bin/tail -n100000 ${log}.log > ${log}.new; mv -f ${log}.new ${log}.log
