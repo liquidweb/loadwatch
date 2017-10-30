@@ -7,7 +7,7 @@ License: MIT
 Group: Applications/System
 BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
 BuildArch: noarch
-Requires: bash, cronie, lynx, sed
+Requires: bash, cronie, lynx, sed, /bin/find
 
 %description
 The loadwatch script runs on an interval, and monitors the system for errant
