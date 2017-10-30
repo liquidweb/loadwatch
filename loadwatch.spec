@@ -57,6 +57,12 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Mon Oct 30 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.1.0
+- changed checklog name to /var/log/loadwatch/check.log
+- changed output files to /var/log/loadwatch/date.txt
+- changed mysql output format
+- added symlink from /root/loadwatch to /var/log/loadwatch
+
 * Wed Sep 06 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.4
 - adjusted cron so it works.
 - added other minor changes requested.
