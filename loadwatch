@@ -49,28 +49,34 @@ printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 if [ ${load} -gt ${LOADTHRESH} ] || \
 	[ ${mem} -gt ${MEMTHRESH} ] || \
 	[ ${swap} -gt ${SWAPTHRESH} ] || \
-	[ ${cursql} -gt $SQLTHRESH ] || \
+	[ ${cursql} -gt ${SQLTHRESH} ] || \
 	[ ${apacheconn} -gt ${APACHETHRESH} ] ; then
 
 	printf "## %s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 		${date} ${load} ${mem} ${swap} \
 		${cursql} ${histsql} ${apacheconn} >> ${checklog}
 
-	printf "## server overview\n"
+	[[ ${load} -gt ${LOADTHRESH} ]] && printf " ## load threshold exceeded\n" >> ${file}
+	[[ ${mem} -gt ${MEMTHRESH} ]] && printf " ## mem threshold exceeded\n" >> ${file}
+	[[ ${swap} -gt ${SWAPTHRESH} ]] && printf " ## swap threshold exceeded\n" >> ${file}
+	[[ ${cursql} -gt ${SQLTHRESH} ]] &&  printf " ## sql threshold exceeded\n" >> ${file}
+	[[ ${apacheconn} -gt ${APACHETHRESH} ]] && printf " ## http threshold exceeded\n" >> ${file}
+
+	printf "## server overview\n" >> ${file}
 	printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 		${date} ${load} ${mem} ${swap} \
 		${cursql} ${histsql} ${apacheconn} >> ${file}
 	free -m >> ${file}
 	uptime >> ${file}
 
-	printf "## system overview\n"
+	printf "## system overview\n" >> ${file}
 	top -bcn1 >> ${file}
 	ps auxf >> ${file}
 
-	printf "## mysql stats\n"
+	printf "## mysql stats\n" >> ${file}
 	mysqladmin processlist stat >> ${file}
 
-	printf "## httpd stats\n"
+	printf "## httpd stats\n" >> ${file}
 	/bin/netstat -nut|awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}'|sort|uniq -c|sort -n|tail -n50 >> ${file}
 	if [[ -f /usr/local/cpanel/version ]] ; then
 		/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/whm-server-status >> ${file} 2>/dev/null
