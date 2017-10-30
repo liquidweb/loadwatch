@@ -28,14 +28,15 @@ mkdir -p \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
   %{buildroot}/var/log/loadwatch
+ln -s -f -L /var/log/loadwatch ${buildroot}/root/loadwatch
 install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
 install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
 install -m 0600 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
-[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch/checklog.log
-[[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /var/log/loadwatch/checklog.log
+[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch/check.log
+[[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /var/log/loadwatch/check.log
 [[ -d /root/loadwatch ]] && rsync -aHl /root/loadwatch /var/log/loadwatch >/dev/null
 rm -rf /root/loadwatch
 rm -f /root/bin/loadwatch.sh /root/bin/loadwatch
@@ -52,6 +53,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %config(noreplace) /etc/default/loadwatch
 /usr/local/lp/bin/loadwatch
 /etc/cron.d/loadwatch.cron
+/root/loadwatch
 /etc/plbakeloadwatchinstalled
 
 %changelog

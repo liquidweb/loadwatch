@@ -2,8 +2,9 @@
 `loadwatch` tracks the health of a server, and logs information if conditions are met.
 
 * Output is logged to `/var/log/loadwatch`.
-* The checklog is at `/var/log/loadwatch.log`.
+* The checklog is at `/var/log/loadwatch/check.log`.
 * The configuration is at `/etc/default/loadwatch`.
+* For convience, a symlink from `/root/loadwatch` is present.
 
 There are three requirements for this script:
 

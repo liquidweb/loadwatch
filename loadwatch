@@ -10,7 +10,7 @@ export APACHEPORT=80
 
 date=$(date +%Y-%m-%d.%H:%M)
 dir=/var/log/loadwatch
-checklog=${dir}/checklog.log
+checklog=${dir}/check.log
 file=${dir}/${date}.txt
 
 source /etc/default/loadwatch
