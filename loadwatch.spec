@@ -5,7 +5,7 @@ Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
 Group: Applications/System
-BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
+BuildRoot: %{_topdir}/%{name}
 BuildArch: noarch
 Requires: bash, cronie, lynx, sed, /bin/find
 
@@ -17,8 +17,7 @@ When errant conditions are detected, certain information is dumped to a file
 for later inspection.
 
 %prep
-rm -rf ${RPM_BUILD_DIR}/loadwatch
-curl -L https://github.com/jackknifed/loadwatch/archive/v%{version}.tar.gz | tar xz
+
 
 %build
 
@@ -27,11 +26,14 @@ mkdir -p \
   %{buildroot}/usr/local/lp/bin \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
+  %{buildroot}/root \
   %{buildroot}/var/log/loadwatch
-ln -s -f -L /var/log/loadwatch ${buildroot}/root/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
-install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0600 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+echo %{buildroot}
+echo %{_sourcedir}
+ln -s -f -L /var/log/loadwatch %{buildroot}/root/loadwatch
+install -m 0700 %{_sourcedir}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
+install -m 755 %{_sourcedir}/loadwatch.env %{buildroot}/etc/default/loadwatch
+install -m 0600 %{_sourcedir}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %post
