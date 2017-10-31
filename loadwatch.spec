@@ -1,3 +1,4 @@
+%global log_dir /var/log/loadwatch
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
 Version: 1.1.0
@@ -36,7 +37,8 @@ install -m 755 %{_sourcedir}/loadwatch.env %{buildroot}/etc/default/loadwatch
 install -m 0600 %{_sourcedir}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
-%post
+%pre
+[[ -d /var/log/loadwatch ]] && mkdir /var/log/loadwatch
 [[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch/check.log
 [[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /var/log/loadwatch/check.log
 [[ -d /root/loadwatch ]] && rsync -aHl /root/loadwatch /var/log/loadwatch >/dev/null
