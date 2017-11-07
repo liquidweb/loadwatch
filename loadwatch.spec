@@ -30,11 +30,11 @@ mkdir -p \
   %{buildroot}/root \
   %{buildroot}/var/log/loadwatch
 echo %{buildroot}
-echo %{_sourcedir}
+echo %{_sourcedir}/%{name}
 ln -s -f -L /var/log/loadwatch %{buildroot}/root/loadwatch
-install -m 0700 %{_sourcedir}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
-install -m 755 %{_sourcedir}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0600 %{_sourcedir}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+install -m 0700 %{_sourcedir}/%{name}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
+install -m 755 %{_sourcedir}/%{name}/loadwatch.env %{buildroot}/etc/default/loadwatch
+install -m 0600 %{_sourcedir}/%{name}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %pre
