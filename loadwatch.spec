@@ -1,14 +1,14 @@
-
+%global log_dir /var/log/loadwatch
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.0.4
+Version: 1.1.0
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
 Group: Applications/System
-BuildRoot: %{_topdir}/%{name}-%{version}-%{release}-build
+BuildRoot: %{_topdir}/%{name}
 BuildArch: noarch
-Requires: bash, cronie, lynx, sed
+Requires: bash, cronie, lynx, sed, /bin/find
 
 %description
 The loadwatch script runs on an interval, and monitors the system for errant
@@ -18,8 +18,7 @@ When errant conditions are detected, certain information is dumped to a file
 for later inspection.
 
 %prep
-rm -rf ${RPM_BUILD_DIR}/loadwatch
-curl -L https://github.com/jackknifed/loadwatch/archive/v%{version}.tar.gz | tar xz
+
 
 %build
 
@@ -28,14 +27,20 @@ mkdir -p \
   %{buildroot}/usr/local/lp/bin \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
+  %{buildroot}/root \
   %{buildroot}/var/log/loadwatch
-install -m 0700 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
-install -m 755 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0600 ${RPM_BUILD_DIR}/loadwatch-%{version}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+echo %{buildroot}
+echo %{_sourcedir}/%{name}
+ln -s -f -L /var/log/loadwatch %{buildroot}/root/loadwatch
+install -m 0700 %{_sourcedir}/%{name}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
+install -m 755 %{_sourcedir}/%{name}/loadwatch.env %{buildroot}/etc/default/loadwatch
+install -m 0600 %{_sourcedir}/%{name}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
-%post
-[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch.log
+%pre
+[[ -d /var/log/loadwatch ]] && mkdir /var/log/loadwatch
+[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch/check.log
+[[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /var/log/loadwatch/check.log
 [[ -d /root/loadwatch ]] && rsync -aHl /root/loadwatch /var/log/loadwatch >/dev/null
 rm -rf /root/loadwatch
 rm -f /root/bin/loadwatch.sh /root/bin/loadwatch
@@ -52,9 +57,16 @@ rm -rf ${RPM_BUILD_ROOT}
 %config(noreplace) /etc/default/loadwatch
 /usr/local/lp/bin/loadwatch
 /etc/cron.d/loadwatch.cron
+/root/loadwatch
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Mon Oct 30 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.1.0
+- changed checklog name to /var/log/loadwatch/check.log
+- changed output files to /var/log/loadwatch/date.txt
+- changed mysql output format
+- added symlink from /root/loadwatch to /var/log/loadwatch
+
 * Wed Sep 06 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.0.4
 - adjusted cron so it works.
 - added other minor changes requested.
