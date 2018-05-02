@@ -53,13 +53,11 @@ rm -f /root/bin/loadwatch.sh /root/bin/loadwatch
 sed -i -e '/\/root\/bin\/loadwatch/d' -e '/\/root\/loadwatch/d' /var/spool/cron/root
 
 %post
-if [[ $1 -eq '1' ]]; then
+# with next version uncomment the following line
+# if [[ $1 -eq '1' ]]; then
   # disable apache statistics if not on cPanel - they can manually be enabled later
-  if [[ ! -f /usr/local/cpanel/version ]]; then
-    sed -i
-      -e '/^APACHEURI/d'
-      -e '/^APACHEPORT/d'
-      /%{conf}
+  if [[ -f /usr/local/cpanel/version ]]; then
+    sed -i -e '/^APACHEURI/d' -e '/^APACHEPORT/d' /%{conf}
 
     port=$(netstat -tpln | \
       awk '$7 ~ /httpd$/ && $4 ~/[[:digit:]]:.*0$/ {gsub("^.*:", "", $4); print $4}')
@@ -67,13 +65,8 @@ if [[ $1 -eq '1' ]]; then
     echo "APACHEURI='/whm-server-status'" >> /%{conf}
     echo "APACHEPORT=${port}" >> /%{conf}
   fi
-else
-  if [[ ! -f /usr/local/cpanel/version ]]; then
-    # remove with future version
-    grep -q '^APACHEURI' /%{conf}
-    [[ $? != 0 ]] && echo 'APACHEURI=/whm-server-status' >> /%{conf}
-  fi
-fi
+# with the next version, uncomment the next line
+# fi
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
