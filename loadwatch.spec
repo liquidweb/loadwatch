@@ -1,4 +1,8 @@
-%global log_dir /var/log/loadwatch
+%global log_dir var/log/loadwatch
+%global legacy_log_dir root/loadwatch
+%global conf etc/default/%{name}
+%global bin usr/local/lp/bin/%{name}
+%global cron etc/cron.d/%{name}.cron
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
 Version: 1.2.0
@@ -28,21 +32,23 @@ mkdir -p \
   %{buildroot}/etc/default \
   %{buildroot}/etc/cron.d \
   %{buildroot}/root \
-  %{buildroot}/var/log/loadwatch
+  %{buildroot}/%{log_dir}
 echo %{buildroot}
 echo %{_sourcedir}/%{name}
-ln -s -f -L /var/log/loadwatch %{buildroot}/root/loadwatch
-install -m 0700 %{_sourcedir}/%{name}/loadwatch %{buildroot}/usr/local/lp/bin/loadwatch
-install -m 755 %{_sourcedir}/%{name}/loadwatch.env %{buildroot}/etc/default/loadwatch
-install -m 0600 %{_sourcedir}/%{name}/loadwatch.cron %{buildroot}/etc/cron.d/loadwatch.cron
+ln -s -f -L /%{log_dir} %{buildroot}/%{legacy_log_dir}
+install -m 0700 %{_sourcedir}/%{name}/loadwatch %{buildroot}/%{bin}
+install -m 755 %{_sourcedir}/%{name}/loadwatch.env %{buildroot}/%{conf}
+install -m 0600 %{_sourcedir}/%{name}/loadwatch.cron %{buildroot}/%{cron}
 touch %{buildroot}/etc/plbakeloadwatchinstalled
 
 %pre
-[[ -d /var/log/loadwatch ]] && mkdir -p /var/log/loadwatch
-[[ -f /root/loadwatch/checklog ]] && mv /root/loadwatch/checklog /var/log/loadwatch/check.log
-[[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /var/log/loadwatch/check.log
-[[ -d /root/loadwatch ]] && rsync -aHl /root/loadwatch/ /var/log/loadwatch/ >/dev/null
-rm -rf /root/loadwatch
+[[ -d /%{log_dir} ]] && mkdir -p /%{log_dir}
+[[ -f /%{legacy_log_dir}/checklog ]] && mv /%{legacy_log_dir}/checklog /%{log_dir}/check.log
+[[ -f /var/log/loadwatch.log ]] && mv /var/log/loadwatch.log /%{log_dir}/check.log
+if [[ -d /%{legacy_log_dir} ]]; then
+  rsync -aHl /%{legacy_log_dir}/ /%{log_dir}/ >/dev/null
+  rm -rf /root/loadwatch
+fi
 rm -f /root/bin/loadwatch.sh /root/bin/loadwatch
 sed -i -e '/\/root\/bin\/loadwatch/d' -e '/\/root\/loadwatch/d' /var/spool/cron/root
 
@@ -53,19 +59,19 @@ if [[ $1 -eq '1' ]]; then
     sed -i
       -e '/^APACHEURI/d'
       -e '/^APACHEPORT/d'
-      /etc/default/loadwatch
+      /%{conf}
 
     port=$(netstat -tpln | \
       awk '$7 ~ /httpd$/ && $4 ~/[[:digit:]]:.*0$/ {gsub("^.*:", "", $4); print $4}')
 
-    echo "APACHEURI='/whm-server-status'" >> /etc/default/loadwatch
-    echo "APACHEPORT=${port}" >> /etc/default/loadwatch
+    echo "APACHEURI='/whm-server-status'" >> /%{conf}
+    echo "APACHEPORT=${port}" >> /%{conf}
   fi
 else
   if [[ ! -f /usr/local/cpanel/version ]]; then
     # remove with future version
-    grep -q 'APACHEURI' /etc/default/loadwatch
-    [[ $? != 0 ]] && echo 'APACHEURI=/whm-server-status' >> /etc/default/loadwatch
+    grep -q '^APACHEURI' /%{conf}
+    [[ $? != 0 ]] && echo 'APACHEURI=/whm-server-status' >> /%{conf}
   fi
 fi
 
@@ -75,11 +81,11 @@ rm -rf ${RPM_BUILD_ROOT}
 %files
 %defattr(-,root,root)
 
-%dir /var/log/loadwatch
-%config(noreplace) /etc/default/loadwatch
-/usr/local/lp/bin/loadwatch
-/etc/cron.d/loadwatch.cron
-/root/loadwatch
+%dir /%{log_dir}
+%config(noreplace) /%{conf}
+/%{bin}
+/%{cron}
+/%{legacy_log_dir}
 /etc/plbakeloadwatchinstalled
 
 %changelog
