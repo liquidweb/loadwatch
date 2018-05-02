@@ -1,11 +1,12 @@
 %global log_dir /var/log/loadwatch
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.1.0
+Version: 1.2.0
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
 Group: Applications/System
+Packager: Jack Hayhurst <support-tools@liquidweb.com>
 BuildRoot: %{_topdir}/%{name}
 BuildArch: noarch
 Requires: bash, cronie, lynx, sed, /bin/find
@@ -82,6 +83,12 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Tue May 01 2018 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.0
+- changed default action to add support for platforms other than cPanel
+- Plesk is now supported
+- added support for alternate Apache Status URI's
+- fixed /var/log/loadwatc/loadwatch bug
+
 * Mon Oct 30 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.1.0
 - changed checklog name to /var/log/loadwatch/check.log
 - changed output files to /var/log/loadwatch/date.txt
