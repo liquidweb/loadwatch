@@ -14,7 +14,7 @@ dir=/var/log/loadwatch
 checklog=${dir}/check.log
 file=${dir}/${date}.txt
 
-source /etc/default/loadwatch
+[[ -f /etc/default/loadwatch ]] && source /etc/default/loadwatch
 
 # see /etc/default/loadwatch for configuration
 
