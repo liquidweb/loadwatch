@@ -36,10 +36,10 @@ cursql=$(/usr/bin/mysqladmin stat | awk '{print $4}')
 histsql=$(/usr/bin/mysql -Bse 'show global status LIKE "Max_used_connections";' | awk '{print $2}')
 
 apacheconn=
-if [[ -f /usr/local/cpanel/version ]]; then
-	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/${APACHEURI} | awk '/requests\ currently\ being\ processed,/ {print $1}')
+if [[ 0 -eq ${APACHEPORT} ]]; then
+	apacheconn=$(netstat -nt | awk 'BEGIN{n=0} $6 ~/^TIME_WAIT$/ && $4 ~ /:(443|80|7080|7081|8080|8081|8443)$/ { n++; } END { print n;}')
 else
-	apacheconn=$(netstat -nt | awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}')
+	apacheconn=$(/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/${APACHEURI} | awk '/requests\ currently\ being\ processed,/ {print $1}')
 fi
 
 if [ ${load} -gt ${LOADTHRESH} ] ||
@@ -74,13 +74,14 @@ if [ ${load} -gt ${LOADTHRESH} ] ||
 	mysql -e "show processlist\G" >>${file}
 	# mysql -e "show engine innodb status\G" >> ${file}
 
-	printf "## httpd stats\n" >>${file}
-	/bin/netstat -nut | awk '$4 ~ /:(80|443)/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}' | sort | uniq -c | sort -n | tail -n50 >>${file}
-	if [[ -f /usr/local/cpanel/version ]]; then
+	printf "## network stats\n"
+	/bin/netstat -nut | awk '$6 ~ /^TIME_WAIT$/ && $4 ~ /:(80|443|7080|7081|8080|8081|8443)$/ {gsub(/:[0-9]*$/, "", $5); print $5, $6}' | sort | uniq -c | sort -n | tail -n50 >>${file}
+
+	if [[ 0 -ne ${APACHEPORT} ]]; then
+		printf "## httpd stats\n" >>${file}
 		/usr/bin/lynx -dump -width 400 localhost:${APACHEPORT}/${APACHEURI} >>${file} 2>/dev/null
-	else
-		netstat -nt | awk 'BEGIN{n=0} $4 ~ /:(443|80)$/ { n++; } END { print n;}' >>${file} 2>/dev/null
 	fi
+
 else
 	printf "%s load[%s] mem[%s/%s] mysql[%s/%s] httpd[%s]\n" \
 		${date} ${load} ${mem} ${swap} \
