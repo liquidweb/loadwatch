@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#default settings - can be adjusted in /etc/default/loadwatch.cron
+# see /etc/default/loadwatch for configuration
 export LOADTHRESH=auto
 export SQLTHRESH=25
 export MEMTHRESH=80
@@ -14,7 +14,6 @@ checklog=${dir}/check.log
 file=${dir}/${date}.txt
 
 source /etc/default/loadwatch
-
 # see /etc/default/loadwatch for configuration
 
 if [[ ${LOADTHRESH} -eq "auto" ]]

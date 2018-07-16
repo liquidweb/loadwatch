@@ -1,7 +1,7 @@
 %global log_dir /var/log/loadwatch
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.1.0
+Version: 1.2.1
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
@@ -61,6 +61,9 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Mon Jul 16 2018 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.1
+- changed checklog name to /var/log/loadwatch/check.log
+
 * Mon Oct 30 2017 Jack Hayhurst <jhayhurst@liquidweb.com> 1.1.0
 - changed checklog name to /var/log/loadwatch/check.log
 - changed output files to /var/log/loadwatch/date.txt
