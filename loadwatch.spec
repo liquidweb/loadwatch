@@ -83,7 +83,7 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %changelog
 * Mon Jul 16 2018 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.1
-- changed checklog name to /var/log/loadwatch/check.log
+- fixes a typo
 
 * Tue May 01 2018 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.0
 - changed default action to add support for platforms other than cPanel
