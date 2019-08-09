@@ -14,7 +14,7 @@ rpmbuild:
     - yum install -y rpm-build
     - echo "%_topdir /builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME" >>/root/.rpmmacros
     - mkdir -p /builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/{BUILD,RPMS}
-    - rpmbuild -bb lw-csf-rules.spec
+    - rpmbuild -bb *.spec
   artifacts:
     paths:
       - "/builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/RPMS/noarch/*.rpm"
