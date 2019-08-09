@@ -5,7 +5,7 @@
 %global cron etc/cron.d/%{name}.cron
 Summary: A script to monitor a system for abnormal conditions, and log data
 Name: loadwatch
-Version: 1.2.1
+Version: 1.2.2
 Release: 0
 URL: https://github.com/jakdept/loadwatch
 License: MIT
@@ -82,6 +82,10 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/plbakeloadwatchinstalled
 
 %changelog
+* Thu Aug 08 2019 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.2
+- fixes a typo
+- setup CI automation for build
+
 * Mon Jul 16 2018 Jack Hayhurst <jhayhurst@liquidweb.com> 1.2.1
 - fixes a typo
 

@@ -1,0 +1,21 @@
+---
+stages:
+  - rpmbuild
+
+rpmbuild:
+  stage: rpmbuild
+  variables:
+    PKG_VERSION: "1.5.6"
+  tags:
+    - docker-executor
+  image:
+    name: centos:7
+  script:
+    - yum install -y rpm-build
+    - echo "%_topdir /builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME" >>/root/.rpmmacros
+    - mkdir -p /builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/{BUILD,RPMS}
+    - rpmbuild -bb lw-csf-rules.spec
+  artifacts:
+    paths:
+      - "/builds/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/RPMS/noarch/*.rpm"
+    expire_in: 30 days
